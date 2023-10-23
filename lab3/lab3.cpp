@@ -21,19 +21,32 @@ public:
         return lastName == other.lastName && firstName == other.firstName;
     }
 
-    bool operator>(const Record& other) const {
+    bool operator+(const Record& other) const {
+        // Р”РѕРґР°РІР°РЅРЅСЏ СЂРµРєРѕСЂРґС–РІ, СЏРєС‰Рѕ РѕР±'С”РєС‚ РїРѕС‚РѕС‡РЅРѕРіРѕ Р·Р°РїРёСЃСѓ СЂРѕР·РїРѕР»РѕР¶РµРЅРёР№ РїС–СЃР»СЏ РѕР±'С”РєС‚Р° other Р·Р° РґР°С‚РѕСЋ РЅР°СЂРѕРґР¶РµРЅРЅСЏ
         return dateOfBirth > other.dateOfBirth;
     }
 
-    bool operator<(const Record& other) const {
+    bool operator-(const Record& other) const {
+        // Р’С–РґРЅС–РјР°РЅРЅСЏ СЂРµРєРѕСЂРґС–РІ, СЏРєС‰Рѕ РѕР±'С”РєС‚ РїРѕС‚РѕС‡РЅРѕРіРѕ Р·Р°РїРёСЃСѓ СЂРѕР·РїРѕР»РѕР¶РµРЅРёР№ РїРµСЂРµРґ РѕР±'С”РєС‚РѕРј other Р·Р° РґР°С‚РѕСЋ РЅР°СЂРѕРґР¶РµРЅРЅСЏ
         return dateOfBirth < other.dateOfBirth;
     }
 
+    // РџРµСЂРµРІР°РЅС‚Р°Р¶РµРЅРёР№ РѕРїРµСЂР°С‚РѕСЂ = РґР»СЏ РєРѕРїС–СЋРІР°РЅРЅСЏ Р·Р°РїРёСЃС–РІ
+    Record& operator=(const Record& other) {
+        if (this != &other) {
+            lastName = other.lastName;
+            firstName = other.firstName;
+            phoneNumber = other.phoneNumber;
+            dateOfBirth = other.dateOfBirth;
+        }
+        return *this;
+    }
+
     void displayRecord() const {
-        cout << "Прізвище: " << lastName << "\n";
-        cout << "Ім'я: " << firstName << "\n";
-        cout << "Номер телефону: " << phoneNumber << "\n";
-        cout << "Дата народження: " << dateOfBirth << "\n";
+        cout << "Р†Рј'СЏ: " << lastName << "\n";
+        cout << "РџСЂС–Р·РІРёС‰Рµ: " << firstName << "\n";
+        cout << "РќРѕРјРµСЂ С‚РµР»РµС„РѕРЅСѓ: " << phoneNumber << "\n";
+        cout << "Р”Р°С‚Р° РЅР°СЂРѕРґР¶РµРЅРЅСЏ: " << dateOfBirth << "\n";
     }
 };
 
@@ -42,33 +55,28 @@ private:
     vector<Record> records;
 
 public:
-    void addRecord(const Record& record) {
+    // РћРїРµСЂР°С‚РѕСЂ + РґР»СЏ РґРѕРґР°РІР°РЅРЅСЏ Р·Р°РїРёСЃСѓ РґРѕ Р·Р°РїРёСЃРЅРёРєР°
+    Notebook& operator+(const Record& record) {
         records.push_back(record);
+        return *this;
     }
 
-    void deleteRecord(const Record& record) {
+    // РћРїРµСЂР°С‚РѕСЂ - РґР»СЏ РІРёРґР°Р»РµРЅРЅСЏ Р·Р°РїРёСЃСѓ Р· Р·Р°РїРёСЃРЅРёРєР°
+    Notebook& operator-(const Record& record) {
         auto it = remove(records.begin(), records.end(), record);
         if (it != records.end()) {
             records.erase(it, records.end());
         }
+        return *this;
     }
 
-    Record findRecordByLastName(const string& lastName) const {
-        for (const Record& record : records) {
-            if (record.lastName == lastName) {
-                return record;
-            }
+    // РџРµСЂРµРІР°РЅС‚Р°Р¶РµРЅРёР№ РѕРїРµСЂР°С‚РѕСЂ = РґР»СЏ СЃРѕСЂС‚СѓРІР°РЅРЅСЏ Р·Р° РґР°С‚Р°РјРё РЅР°СЂРѕРґР¶РµРЅРЅСЏ
+    Notebook& operator=(const Notebook& other) {
+        if (this != &other) {
+            records = other.records;
+            sortRecordsByDateOfBirth();
         }
-        throw runtime_error("Запис не знайдено");
-    }
-
-    Record findRecordByDateOfBirth(const string& dateOfBirth) const {
-        for (const Record& record : records) {
-            if (record.dateOfBirth == dateOfBirth) {
-                return record;
-            }
-        }
-        throw runtime_error("Запис не знайдено");
+        return *this;
     }
 
     void sortRecordsByDateOfBirth() {
@@ -80,15 +88,14 @@ public:
     }
 };
 
-// Функція для запиту користувача про сортування записів за датою народження
 void promptSortByDateOfBirth(Notebook& notebook) {
     string response;
-    cout << "Чи бажаєте відсортувати записи за датою народження? (так/ні): ";
+    cout << "Р§Рё Р±Р°Р¶Р°С”С‚Рµ РІС–РґСЃРѕСЂС‚СѓРІР°С‚Рё Р·Р°РїРёСЃРё Р·Р° РґР°С‚РѕСЋ РЅР°СЂРѕРґР¶РµРЅРЅСЏ? (С‚Р°Рє/РЅС–): ";
     cin >> response;
 
-    if (response == "так") {
+    if (response == "С‚Р°Рє") {
         notebook.sortRecordsByDateOfBirth();
-        cout << "Записи відсортовані за датою народження." << endl;
+        cout << "Р—Р°РїРёСЃРё РІС–РґСЃРѕСЂС‚РѕРІР°РЅС– Р·Р° РґР°С‚РѕСЋ РЅР°СЂРѕРґР¶РµРЅРЅСЏ." << endl;
     }
 }
 
@@ -96,37 +103,26 @@ int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     Notebook notebook;
-    Record record1("Сміт", "Іван", "123-456", "01.01.1990");
-    Record record2("Джонсон", "Сара", "987-654", "05.05.1985");
-    Record record3("Петренко", "Марія", "111-222", "10.10.1992");
-    Record record4("Іванов", "Олег", "555-888", "15.03.1987");
-    Record record5("Коваль", "Оксана", "999-777", "20.12.1995");
-    Record record6("Василенко", "Віталій", "777-123", "30.06.1980");
-    Record record7("Мельничук", "Наталія", "456-789", "04.04.1988");
-    Record record8("Лисенко", "Ірина", "222-333", "12.08.1994");
-    Record record9("Гриценко", "Олексій", "333-555", "25.07.1999");
-    Record record10("Павленко", "Лариса", "777-999", "22.11.1982");
+    Record record1("РЎРёРґРѕСЂРѕРІ", "Р†РІР°РЅ", "123-456", "01.01.1990");
+    Record record2("РђРЅРґСЂС–С”РЅРєРѕ", "РЎРІС–С‚Р»Р°РЅР°", "987-654", "05.05.1985");
+    
+    // Р”РѕРґР°РІР°РЅРЅСЏ Р·Р°РїРёСЃС–РІ РґРѕ Р·Р°РїРёСЃРЅРёРєР° Р·Р° РґРѕРїРѕРјРѕРіРѕСЋ РѕРїРµСЂР°С‚РѕСЂР° +
+    notebook + record1 + record2;
 
+    // Р’РёРґР°Р»РµРЅРЅСЏ Р·Р°РїРёСЃСѓ Р· Р·Р°РїРёСЃРЅРёРєР° Р·Р° РґРѕРїРѕРјРѕРіРѕСЋ РѕРїРµСЂР°С‚РѕСЂР° -
+    notebook - record1;
 
-
-    notebook.addRecord(record1);
-    notebook.addRecord(record2);
-    notebook.addRecord(record3);
-    notebook.addRecord(record4);
-    notebook.addRecord(record5);
-    notebook.addRecord(record6);
-    notebook.addRecord(record7);
-    notebook.addRecord(record8);
-    notebook.addRecord(record9);
-    notebook.addRecord(record10);
+    // РЎРѕСЂС‚СѓРІР°РЅРЅСЏ Р·Р°РїРёСЃРЅРёРєР° Р·Р° РґР°С‚Р°РјРё РЅР°СЂРѕРґР¶РµРЅРЅСЏ Р·Р° РґРѕРїРѕРјРѕРіРѕСЋ РѕРїРµСЂР°С‚РѕСЂР° =
+    Notebook sortedNotebook;
+    sortedNotebook = notebook;
 
     int searchType;
-    cout << "Оберіть тип пошуку (1 - за прізвищем, 2 - за датою народження): ";
+    cout << "Р’РёР±РµСЂС–С‚СЊ С‚РёРї РїРѕС€СѓРєСѓ (1 - Р·Р° С–Рј'СЏРј, 2 - Р·Р° РґР°С‚РѕСЋ РЅР°СЂРѕРґР¶РµРЅРЅСЏ): ";
     cin >> searchType;
 
     if (searchType == 1) {
         string searchName;
-        cout << "Введіть прізвище для пошуку: ";
+        cout << "Р’РІРµРґС–С‚СЊ С–Рј'СЏ РґР»СЏ РїРѕС€СѓРєСѓ: ";
         cin >> searchName;
 
         try {
@@ -139,7 +135,7 @@ int main() {
     }
     else if (searchType == 2) {
         string searchDateOfBirth;
-        cout << "Введіть дату народження для пошуку (у форматі dd.mm.yyyy): ";
+        cout << "Р’РІРµРґС–С‚СЊ РґР°С‚Сѓ РЅР°СЂРѕРґР¶РµРЅРЅСЏ РґР»СЏ РїРѕС€СѓРєСѓ (Сѓ С„РѕСЂРјР°С‚С– dd.mm.yyyy): ";
         cin >> searchDateOfBirth;
 
         try {
@@ -151,10 +147,9 @@ int main() {
         }
     }
     else {
-        cerr << "Неправильний тип пошуку." << endl;
+        cerr << "РќРµРІС–СЂРЅРёР№ С‚РёРї РїРѕС€СѓРєСѓ." << endl;
     }
 
-    // Виклик функції для запиту про сортування
     promptSortByDateOfBirth(notebook);
 
     return 0;
